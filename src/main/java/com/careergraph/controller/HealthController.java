@@ -13,12 +13,19 @@ public class HealthController {
         this.driver = driver;
     }
 
+    @GetMapping("/healthz")
+    public String healthz() {
+        return "OK";
+    }
+
     @GetMapping("/api/health")
-    public String health() {
+    public String databaseHealth() {
 
         try (var session = driver.session()) {
 
-            var result = session.run("RETURN 'CognoDB connection successful!' AS message");
+            var result = session.run(
+                    "RETURN 'CognoDB connection successful!' AS message"
+            );
 
             return result.single()
                     .get("message")
