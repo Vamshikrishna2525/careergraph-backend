@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CareerGraph</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <header class="header">
+
+        <div>
+
+            <h1>CareerGraph</h1>
+
+            <p>Graph-powered Career Intelligence</p>
+
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+
+        <!-- ================================= -->
+        <!-- PERSON SELECTION -->
+        <!-- ================================= -->
+
+        <section class="card">
+
+            <h2>Career Analysis</h2>
+
+            <div class="search-row">
+
+                <input
+                    type="text"
+                    id="personId"
+                    value="P001"
+                    placeholder="Enter Person ID"
+                >
+
+                <button onclick="loadCareerData()">
+
+                    Analyze Career
+
+                </button>
+
+            </div>
+
+            <p class="hint">
+
+                Try P001 for Rahul Sharma
+
+            </p>
+
+        </section>
+
+
+        <!-- ================================= -->
+        <!-- PERSON -->
+        <!-- ================================= -->
+
+        <section class="card">
+
+            <h2>Person</h2>
+
+            <div id="personInfo">
+
+                <p class="empty">
+
+                    Click "Analyze Career" to load data.
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================= -->
+        <!-- RECOMMENDED JOBS -->
+        <!-- ================================= -->
+
+        <section class="card">
+
+            <h2>Recommended Jobs</h2>
+
+            <div id="recommendedJobs" class="job-list">
+
+                <p class="empty">
+
+                    No recommendations loaded.
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================= -->
+        <!-- RANKED CANDIDATES -->
+        <!-- ================================= -->
+
+        <section class="card">
+
+            <h2>Ranked Candidates</h2>
+
+            <div class="search-row">
+
+                <input
+                    type="text"
+                    id="candidateJobId"
+                    value="J001"
+                    placeholder="Enter Job ID"
+                >
+
+                <button onclick="loadCandidates()">
+
+                    Find Candidates
+
+                </button>
+
+            </div>
+
+            <p class="hint">
+
+                Try J001 for Java Developer
+
+            </p>
+
+            <div id="candidateResults">
+
+                <p class="empty">
+
+                    No candidates loaded.
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================= -->
+        <!-- SKILL GAP -->
+        <!-- ================================= -->
+
+        <section class="card">
+
+            <h2>Skill Gap</h2>
+
+            <div class="search-row">
+
+                <input
+                    type="text"
+                    id="jobId"
+                    value="J002"
+                    placeholder="Enter Job ID"
+                >
+
+                <button onclick="loadSkillGap()">
+
+                    Check Skill Gap
+
+                </button>
+
+            </div>
+
+            <div id="skillGap"></div>
+
+        </section>
+
+
+        <!-- ================================= -->
+        <!-- SIMILAR PROFESSIONALS -->
+        <!-- ================================= -->
+
+        <section class="card">
+
+            <h2>Similar Professionals</h2>
+
+            <div id="similarProfessionals">
+
+                <p class="empty">
+
+                    No professionals loaded.
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================= -->
+        <!-- ERROR -->
+        <!-- ================================= -->
+
+        <div id="errorMessage" class="error hidden"></div>
+
+
+    </main>
+
+
+    <footer>
+
+        <p>CareerGraph • Spring Boot • CognoDB</p>
+
+    </footer>
+
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
