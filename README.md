@@ -1,461 +1,482 @@
-# CareerGraph
+CareerGraph
 
+Graph-Powered Career Intelligence
 
-Graph-powered Career Intelligence application built using **Spring Boot** and **CognoDB**.
+CareerGraph is a graph-based career intelligence application that uses CognoDB to model relationships between people, skills, jobs, companies, and courses.
 
+The application provides career analysis and relationship-driven recommendations such as suitable jobs, ranked candidates, skill gaps, and similar professionals.
 
-CareerGraph uses a graph database to connect people, skills, jobs, companies, and courses. It analyzes these relationships to provide career recommendations, candidate ranking, skill-gap analysis, and similar-professional recommendations.
+Overview
 
+Traditional career matching systems often depend on large numbers of relational joins and manually maintained matching logic.
 
----
+CareerGraph models career information as a connected graph, making relationship-based queries easier to express and understand.
 
+The application connects a Spring Boot backend with CognoDB and provides a simple web interface for exploring career relationships.
 
-## 1. Project Overview
+Core capabilities
 
+Analyze a person's career profile
 
-CareerGraph is designed to demonstrate how graph relationships can be used for career intelligence.
+Identify matching skills
 
+Recommend suitable jobs
 
-The application currently supports:
+Rank candidates for a job based on skill overlap
 
+Identify missing skills for a candidate
 
-- Person → Recommended Jobs
-- Job → Ranked Candidates
-- Person → Job Skill Gap
-- Person → Similar Professionals
-- Match percentages
-- Shared skills analysis
-- REST APIs
-- Swagger/OpenAPI documentation
-- Web-based dashboard
+Find professionals with similar skill profiles
 
+Query career relationships using graph traversal
 
-The backend is implemented using Spring Boot and the graph data is stored in CognoDB using Cypher queries.
+Expose functionality through REST APIs
 
+Provide a browser-based interface for interacting with the graph
 
----
+Features
 
+1. Career Analysis
 
-## 2. Why a Graph Database?
+Given a person ID, CareerGraph retrieves the person's profile and matching skills and recommends suitable job roles.
 
+Example
 
-Career data is highly relationship-oriented.
+Person: Rahul Sharma
 
+Skills:
+- Java
+- Spring Boot
+- SQL
+- Git
 
-A traditional relational database would require several tables and joins to answer questions such as:
+Recommended Jobs:
+- Java Developer
+- Spring Boot Developer
+- Full Stack Developer
+- Backend Developer
+- Software Engineer
 
+2. Ranked Candidates
 
-- Which jobs match a person's skills?
-- Which candidates are suitable for a job?
-- Which professionals have similar skills?
-- Which skills is a person missing for a particular job?
-- Which companies are connected to jobs and professionals?
-- Which courses teach skills required for a particular job?
+CareerGraph can find and rank candidates for a particular job.
 
-
-A graph database represents these relationships directly.
-
-
-For example:
-
-
-```text
-(Person)
-   |
-   | HAS_SKILL
-   ↓
-(Skill)
-   ↑
-   | REQUIRES
-   |
-(Job)
-   |
-   | OFFERED_BY
-   ↓
-(Company)
-
-This makes relationship-heavy career queries easier to express and understand.
-
-CareerGraph therefore uses graph traversal and relationship matching instead of relying primarily on large numbers of relational joins.
-
-3. Graph Data Model
-Nodes
-
-The current graph contains the following node types:
-
-Person
-Skill
-Job
-Company
-Course
-Relationships
-
-The graph currently contains:
-
-Person -[:HAS_SKILL]-> Skill
-
-
-Job -[:REQUIRES]-> Skill
-
-
-Job -[:OFFERED_BY]-> Company
-
-
-Person -[:WORKED_AT]-> Company
-
-
-Course -[:TEACHES]-> Skill
-
-
-Person -[:COMPLETED]-> Course
-Simplified Graph
-                         ┌─────────────┐
-                         │   Company   │
-                         └──────▲──────┘
-                                │
-                           OFFERED_BY
-                                │
-┌──────────┐  HAS_SKILL   ┌─────┴─────┐   REQUIRES   ┌──────────┐
-│  Person  │─────────────►│   Skill   │◄────────────│   Job    │
-└────┬─────┘              └─────▲─────┘              └──────────┘
-     │                          │
-     │ COMPLETED                │ TEACHES
-     ▼                          │
-┌──────────┐              ┌────┴─────┐
-│  Course  │─────────────►│  Skill   │
-└──────────┘              └──────────┘
-
-
-Person ──WORKED_AT──► Company
-4. Seed Data
-
-The project includes seed data in:
-
-data/seed.cypher
-
-The seed data contains:
-
-Skills
-
-Examples:
+For example, a Spring Boot Developer position may require:
 
 Java
 Spring Boot
-React
-JavaScript
 SQL
-Python
-HTML
-CSS
-Git
 REST API
-People
 
-Examples:
+Candidates are ranked according to the percentage of required skills they possess.
 
-Rahul Sharma
-Priya Reddy
-Arjun Kumar
-Sneha Patel
-Kiran Rao
-Ananya Singh
-Jobs
+Example
 
-Examples:
+Kiran Rao        100%
+Rahul Sharma      75%
+Sneha Patel       75%
+Arjun Kumar       50%
+Priya Reddy       25%
+Ananya Singh       0%
 
-Java Developer
-Spring Boot Developer
-Full Stack Developer
-Backend Developer
-Software Engineer
-Companies
+This demonstrates graph-based skill matching rather than simply returning an unranked list of candidates.
 
-Examples:
+3. Skill Gap Analysis
 
-TechNova Solutions
-Infosys
-Wipro
-TCS
-NextGen Technologies
-Courses
+CareerGraph compares a person's skills against the skills required for a particular job.
 
-Examples:
+Example
 
-Java Programming
-Spring Boot Masterclass
-React Fundamentals
-SQL Essentials
-Python for Developers
-5. Main Features
-5.1 Recommended Jobs
+Job: Spring Boot Developer
 
-Endpoint:
+Matching Skills:
+- Java
+- Spring Boot
+- SQL
 
-GET /api/persons/{personId}/jobs
+Missing Skills:
+- REST API
 
-Example:
+This allows the system to identify the skills a candidate needs to develop for a target role.
 
-GET /api/persons/P001/jobs
+4. Similar Professionals
 
-For Rahul Sharma, the application analyzes his skills and returns matching jobs.
+CareerGraph can identify professionals with similar skill profiles.
 
-Example response:
+Similarity is calculated from overlapping skills between professionals.
 
-{
-  "person": "Rahul Sharma",
-  "matchingSkills": [
-    "Java",
-    "Spring Boot",
-    "SQL",
-    "Git"
-  ],
-  "recommendedJobs": [
-    "Java Developer",
-    "Spring Boot Developer",
-    "Full Stack Developer",
-    "Backend Developer",
-    "Software Engineer"
-  ]
-}
-5.2 Ranked Candidates
+Example
 
-Endpoint:
+Kiran Rao        75%
+Sneha Patel      50%
+Arjun Kumar      50%
+Priya Reddy      25%
+Ananya Singh     25%
 
-GET /api/jobs/{jobId}/candidates
+This demonstrates how graph relationships can be used to discover related professional profiles.
 
-Example:
+Screenshots
 
-GET /api/jobs/J001/candidates
+Career Analysis
 
-The application calculates the percentage of required job skills possessed by each candidate and ranks candidates accordingly.
+The main CareerGraph interface allows a person to be analyzed using their person ID. The application displays the person's matching skills and recommended career roles.
 
-Example:
 
-{
-  "job": "Java Developer",
-  "requiredSkills": [
-    "Java",
-    "SQL",
-    "Git"
-  ],
-  "candidates": [
-    {
-      "matchPercentage": 100,
-      "name": "Rahul Sharma",
-      "matchingSkills": [
-        "Java",
-        "SQL",
-        "Git"
-      ]
-    }
-  ]
-}
-5.3 Skill Gap Analysis
 
-Endpoint:
+Ranked Candidates
 
-GET /api/persons/{personId}/skill-gap/{jobId}
+CareerGraph ranks candidates according to how many of the required job skills they possess.
 
-Example:
 
-GET /api/persons/P001/skill-gap/J002
 
-The application compares:
+Skill Gap and Similar Professionals
 
-Person Skills
-        VS
-Job Required Skills
+The application identifies matching and missing skills for a target job and also finds professionals with similar skill profiles.
 
-and returns:
 
-Matching skills
-Missing skills
 
-Example:
+Graph Data Model
 
-{
-  "person": "Rahul Sharma",
-  "job": "Spring Boot Developer",
-  "matchingSkills": [
-    "Java",
-    "Spring Boot",
-    "SQL"
-  ],
-  "missingSkills": [
-    "REST API"
-  ]
-}
-5.4 Similar Professionals
+CareerGraph uses a graph model to represent career-related entities and their relationships.
 
-Endpoint:
+Nodes
 
-GET /api/persons/{personId}/similar-professionals
+The graph contains the following node types:
 
-Example:
+Person
 
-GET /api/persons/P001/similar-professionals
+Skill
 
-The application compares the skills of the selected person with other professionals.
+Job
 
-Similarity is calculated using:
+Company
 
-Similarity Percentage =
-(Number of Shared Skills / Total Skills of Selected Person) × 100
+Course
 
-Example:
+Relationships
 
-{
-  "person": "Rahul Sharma",
-  "similarProfessionals": [
-    {
-      "name": "Kiran Rao",
-      "sharedSkills": [
-        "Java",
-        "Spring Boot",
-        "SQL"
-      ],
-      "similarityPercentage": 75
-    }
-  ]
-}
-6. Architecture
-                 ┌─────────────────────┐
-                 │     Web Browser     │
-                 │   HTML / CSS / JS   │
-                 └──────────┬──────────┘
-                            │
-                            │ HTTP
-                            ▼
-                 ┌─────────────────────┐
-                 │   CareerController  │
-                 │     REST APIs       │
-                 └──────────┬──────────┘
-                            │
-                            ▼
-                 ┌─────────────────────┐
-                 │    CareerService    │
-                 │ Business Logic      │
-                 └──────────┬──────────┘
-                            │
-                            ▼
-                 ┌─────────────────────┐
-                 │  CareerRepository   │
-                 │   Cypher Queries    │
-                 └──────────┬──────────┘
-                            │
-                            ▼
-                 ┌─────────────────────┐
-                 │      CognoDB        │
-                 │    Graph Database   │
-                 └─────────────────────┘
-7. Project Structure
+The current graph uses relationships such as:
+
+Person -[:HAS_SKILL]-> Skill
+Job -[:REQUIRES]-> Skill
+Job -[:OFFERED_BY]-> Company
+Person -[:WORKED_AT]-> Company
+Course -[:TEACHES]-> Skill
+Person -[:COMPLETED]-> Course
+
+These relationships allow career questions to be represented as graph traversal problems.
+
+For example:
+
+Person
+   |
+   | HAS_SKILL
+   v
+ Skill
+   ^
+   | REQUIRES
+   |
+  Job
+
+A candidate can therefore be compared with a job by traversing from the person to their skills and comparing those skills with the skills required by the job.
+
+Why a Graph Database?
+
+Career data is naturally relationship-heavy.
+
+A person can have multiple skills, work for multiple companies, complete multiple courses, and be suitable for multiple jobs.
+
+Similarly, a job can require multiple skills and be offered by a company.
+
+Representing these relationships directly as graph edges makes relationship-oriented queries easier to express.
+
+For example:
+
+Person -> Skills -> Jobs
+Person -> Skills -> Similar Professionals
+Job -> Required Skills -> Candidates
+Person -> Skills -> Missing Job Skills
+
+CareerGraph therefore uses graph traversal and relationship matching instead of relying primarily on large numbers of relational joins.
+
+Career Matching Logic
+
+The application uses skill overlap to determine how closely a candidate matches a job.
+
+Matching Percentage
+
+Matching Percentage =
+Number of Matching Skills
+------------------------- × 100
+Number of Required Skills
+
+For example, if a job requires:
+
+Java
+Spring Boot
+SQL
+REST API
+
+and a candidate has:
+
+Java
+Spring Boot
+SQL
+
+then:
+
+Matching Skills = 3
+Required Skills = 4
+
+Match = 3 / 4 × 100
+      = 75%
+
+The same relationship-based matching approach is used for candidate ranking and skill-gap analysis.
+
+Application Architecture
+
+The application follows a layered Spring Boot architecture.
+
+                     ┌──────────────────────┐
+                     │      Web Browser     │
+                     │   HTML / CSS / JS    │
+                     └──────────┬───────────┘
+                                │
+                                │ HTTP
+                                ▼
+                     ┌──────────────────────┐
+                     │   REST Controllers   │
+                     │  CareerController    │
+                     │  HealthController    │
+                     └──────────┬───────────┘
+                                │
+                                ▼
+                     ┌──────────────────────┐
+                     │    CareerService     │
+                     │    Business Logic    │
+                     └──────────┬───────────┘
+                                │
+                                ▼
+                     ┌──────────────────────┐
+                     │   CareerRepository   │
+                     │    Graph Queries     │
+                     └──────────┬───────────┘
+                                │
+                                ▼
+                     ┌──────────────────────┐
+                     │       CognoDB        │
+                     │    Graph Database    │
+                     └──────────────────────┘
+
+Project Structure
+
 careergraph-backend/
 │
 ├── data/
 │   └── seed.cypher
 │
+├── screenshots/
+│   ├── career-analysis.png
+│   ├── ranked-candidates.png
+│   └── skill-gap.png
+│
 ├── src/
 │   ├── main/
 │   │   ├── java/
-│   │   │   └── com/careergraph/
-│   │   │       ├── CareergraphBackendApplication.java
-│   │   │       │
-│   │   │       ├── config/
-│   │   │       │   └── CognoDBConfig.java
-│   │   │       │
-│   │   │       ├── controller/
-│   │   │       │   ├── CareerController.java
-│   │   │       │   └── HealthController.java
-│   │   │       │
-│   │   │       ├── dto/
-│   │   │       │   ├── CandidateResponse.java
-│   │   │       │   ├── RecommendedJobsResponse.java
-│   │   │       │   ├── SimilarProfessional.java
-│   │   │       │   ├── SimilarProfessionalsResponse.java
-│   │   │       │   └── SkillGapResponse.java
-│   │   │       │
-│   │   │       ├── exception/
-│   │   │       │   ├── GlobalExceptionHandler.java
-│   │   │       │   └── ResourceNotFoundException.java
-│   │   │       │
-│   │   │       ├── repository/
-│   │   │       │   └── CareerRepository.java
-│   │   │       │
-│   │   │       └── service/
-│   │   │           └── CareerService.java
+│   │   │   └── com/
+│   │   │       └── careergraph/
+│   │   │           ├── CareergraphBackendApplication.java
+│   │   │           │
+│   │   │           ├── config/
+│   │   │           │   └── CognoDBConfig.java
+│   │   │           │
+│   │   │           ├── controller/
+│   │   │           │   ├── CareerController.java
+│   │   │           │   └── HealthController.java
+│   │   │           │
+│   │   │           ├── dto/
+│   │   │           │   ├── CandidateResponse.java
+│   │   │           │   ├── RecommendedJobsResponse.java
+│   │   │           │   ├── SimilarProfessional.java
+│   │   │           │   ├── SimilarProfessionalsResponse.java
+│   │   │           │   └── SkillGapResponse.java
+│   │   │           │
+│   │   │           ├── exception/
+│   │   │           │   ├── GlobalExceptionHandler.java
+│   │   │           │   └── ResourceNotFoundException.java
+│   │   │           │
+│   │   │           ├── repository/
+│   │   │           │   └── CareerRepository.java
+│   │   │           │
+│   │   │           └── service/
+│   │   │               └── CareerService.java
 │   │   │
 │   │   └── resources/
-│   │       ├── static/
-│   │       │   ├── index.html
-│   │       │   ├── style.css
-│   │       │   └── app.js
+│   │       ├── application.properties
 │   │       │
-│   │       └── application.properties
+│   │       └── static/
+│   │           ├── app.js
+│   │           ├── index.html
+│   │           └── style.css
 │   │
 │   └── test/
 │       └── java/
-│           └── com/careergraph/
-│               ├── CareergraphBackendApplicationTests.java
-│               ├── controller/
-│               │   └── CareerControllerTest.java
-│               └── service/
-│                   └── CareerServiceTest.java
+│           └── com/
+│               └── careergraph/
+│                   ├── CareergraphBackendApplicationTests.java
+│                   ├── controller/
+│                   │   └── CareerControllerTest.java
+│                   └── service/
+│                       └── CareerServiceTest.java
 │
-├── pom.xml
+├── .dockerignore
+├── .gitignore
+├── Dockerfile
 ├── mvnw
 ├── mvnw.cmd
+├── pom.xml
 └── README.md
-8. Technologies Used
-Java 25 LTS
-Spring Boot 4.1.0
-Spring Web MVC
-Spring Validation
-CognoDB
-Neo4j Java Driver
-Cypher
+
+Technology Stack
+
+Backend
+
+Java
+
+Spring Boot
+
+Spring Web
+
 Maven
+
+REST APIs
+
+Database
+
+CognoDB
+
+Graph data model
+
+Cypher queries
+
+Neo4j-compatible Java driver
+
+Frontend
+
 HTML
+
 CSS
+
 JavaScript
-Swagger / OpenAPI
+
+Testing
+
 JUnit
-Mockito
-9. Configuration
 
-The application uses environment variables for database credentials.
+Spring Boot Test
 
-application.properties:
+Deployment
+
+Docker
+
+Render
+
+Source Control
+
+Git
+
+GitHub
+
+API
+
+The backend exposes REST endpoints for career-related operations.
+
+Feature
+
+Method
+
+Endpoint
+
+Recommended Jobs
+
+GET
+
+/api/persons/{personId}/jobs
+
+Ranked Candidates
+
+GET
+
+/api/jobs/{jobId}/candidates
+
+Skill Gap
+
+GET
+
+/api/persons/{personId}/skill-gap/{jobId}
+
+Similar Professionals
+
+GET
+
+/api/persons/{personId}/similar-professionals
+
+Health Check
+
+GET
+
+/api/health
+
+Health Check
+
+GET /api/health
+
+This endpoint verifies the connection between the Spring Boot application and CognoDB.
+
+A successful response is:
+
+CognoDB connection successful!
+
+Database Configuration
+
+The application reads database configuration through environment variables.
 
 spring.application.name=careergraph-backend
-
 
 cognodb.uri=${COGNODB_URI}
 cognodb.username=${COGNODB_USERNAME}
 cognodb.password=${COGNODB_PASSWORD}
 
+server.port=${PORT:8080}
 
-server.port=8080
+The actual credentials are not stored in the source code.
 
-Set the following environment variables:
+The following environment variables are required:
 
 COGNODB_URI
 COGNODB_USERNAME
 COGNODB_PASSWORD
 
-Database credentials are intentionally not stored in the repository.
+The application also supports the PORT environment variable used by the deployment platform.
 
-10. Running the Application
-Step 1: Clone the repository
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+Running Locally
+
+1. Clone the repository
+
+git clone https://github.com/Vamshikrishna2525/careergraph-backend.git
 cd careergraph-backend
-Step 2: Configure environment variables
 
-Set:
+2. Configure environment variables
 
-COGNODB_URI
-COGNODB_USERNAME
-COGNODB_PASSWORD
-Step 3: Load seed data
+Set the following variables in your local environment:
+
+COGNODB_URI=<your-cognodb-uri>
+COGNODB_USERNAME=<your-cognodb-username>
+COGNODB_PASSWORD=<your-cognodb-password>
+
+Do not commit database credentials to GitHub.
+
+3. Load seed data
 
 Run the contents of:
 
@@ -463,36 +484,107 @@ data/seed.cypher
 
 against the CognoDB database.
 
-Step 4: Run the application
+4. Build the application
 
-Windows:
+On Windows:
 
-.\mvnw.cmd spring-boot:run
+.\mvnw.cmd clean package -DskipTests
 
 Or:
 
 .\mvnw.cmd clean package
+
+The generated JAR is located under:
+
+target/careergraph-backend-0.0.1-SNAPSHOT.jar
+
+5. Run the application
+
 java -jar target/careergraph-backend-0.0.1-SNAPSHOT.jar
 
-The application runs on:
+The application uses port 8080 by default.
+
+Open:
 
 http://localhost:8080
-11. Swagger API Documentation
 
-Once the application is running, Swagger UI is available at:
+Docker
 
-http://localhost:8080/swagger-ui/index.html
+CareerGraph includes a Dockerfile for containerized deployment.
 
-The Swagger interface can be used to test the REST APIs.
+The Docker image builds the Spring Boot application and runs the generated JAR.
 
-12. API Summary
-Feature	Method	Endpoint
-Recommended Jobs	GET	/api/persons/{personId}/jobs
-Ranked Candidates	GET	/api/jobs/{jobId}/candidates
-Skill Gap	GET	/api/persons/{personId}/skill-gap/{jobId}
-Similar Professionals	GET	/api/persons/{personId}/similar-professionals
-Health Check	GET	/health
-13. Important Cypher Operations
+Build
+
+docker build -t careergraph-backend .
+
+Run
+
+docker run -p 8080:8080 \
+  -e COGNODB_URI=<your-uri> \
+  -e COGNODB_USERNAME=<your-username> \
+  -e COGNODB_PASSWORD=<your-password> \
+  careergraph-backend
+
+Deployment
+
+The application is deployed as a Docker-based web service.
+
+Deployment Flow
+
+GitHub Repository
+       │
+       ▼
+     Render
+       │
+       ▼
+  Docker Build
+       │
+       ▼
+Spring Boot Application
+       │
+       ▼
+     CognoDB
+
+The application is configured to use the deployment platform's PORT environment variable:
+
+server.port=${PORT:8080}
+
+Live Demo
+
+The deployed CareerGraph application is available at:
+
+https://careergraph-backend-pdiv.onrender.com
+
+The free deployment instance may take some time to respond after a period of inactivity.
+
+GitHub Repository
+
+Source code:
+
+https://github.com/Vamshikrishna2525/careergraph-backend
+
+Sample Graph Relationships
+
+The project includes seed graph data in:
+
+data/seed.cypher
+
+The graph represents relationships between people, skills, jobs, companies, and courses.
+
+Example relationship patterns:
+
+Person -[:HAS_SKILL]-> Skill
+Job -[:REQUIRES]-> Skill
+Job -[:OFFERED_BY]-> Company
+Person -[:WORKED_AT]-> Company
+Course -[:TEACHES]-> Skill
+Person -[:COMPLETED]-> Course
+
+These relationships form the foundation for career analysis and matching queries.
+
+Important Cypher Operations
+
 Recommended Jobs
 
 The query traverses:
@@ -531,6 +623,7 @@ The result produces:
 
 matchingSkills
 missingSkills
+
 Similar Professionals
 
 The query traverses:
@@ -539,115 +632,131 @@ Person → HAS_SKILL → Skill ← HAS_SKILL ← Person
 
 The number of shared skills is compared against the selected person's total skills to calculate similarity.
 
-14. Error Handling
+Testing
 
-The application provides centralized error handling.
+The project contains tests for the application, controller layer, and service layer.
 
-For example, requesting an unknown person:
+Test classes include:
 
-GET /api/persons/P999/jobs
+CareergraphBackendApplicationTests
+CareerControllerTest
+CareerServiceTest
 
-returns:
+Tests can be executed with:
 
-{
-  "status": 404,
-  "error": "Not Found",
-  "message": "Person not found: P999"
-}
+.\mvnw.cmd test
 
-This prevents internal exceptions from being exposed directly to API users.
+For a deployment build where tests are intentionally skipped:
 
-15. Testing
+.\mvnw.cmd clean package -DskipTests
 
-The project includes controller, service, and application tests.
+Key Use Cases
 
-Run:
+Candidate to Job
 
-.\mvnw.cmd clean test
+Person
+   │
+   └── HAS_SKILL
+          │
+          ▼
+        Skill
+          ▲
+          │
+       REQUIRES
+          │
+          Job
 
-Current test result:
+This allows the system to determine how well a candidate matches a job.
 
-Tests run: 17
-Failures: 0
-Errors: 0
-Skipped: 0
-
-
-BUILD SUCCESS
-16. Web UI
-
-The application provides a simple CareerGraph dashboard.
-
-The dashboard includes:
-
-Career Analysis
-Person information
-Matching skills
-Recommended jobs
-Ranked candidates
-Skill gap analysis
-Similar professionals
-
-Example workflow:
-
-Enter Person ID
-      ↓
-Analyze Career
-      ↓
-View Skills
-      ↓
-View Recommended Jobs
-      ↓
-Check Job Skill Gap
-      ↓
-View Similar Professionals
-      ↓
-Find Ranked Candidates
-17. Demo
-
-Hosted Demo:
-
-TODO: Add deployed application URL
-
-Swagger:
-
-TODO: Add deployed Swagger URL
-18. Screenshots
-
-Add screenshots of the working application here before submission.
-
-Career Analysis
-TODO: Add screenshot
-Recommended Jobs
-TODO: Add screenshot
-Ranked Candidates
-TODO: Add screenshot
 Skill Gap
-TODO: Add screenshot
+
+Person Skills
+     │
+     │ compare
+     ▼
+Required Job Skills
+     │
+     ├── Matching Skills
+     │
+     └── Missing Skills
+
 Similar Professionals
-TODO: Add screenshot
-19. Future Improvements
 
-Possible future enhancements include:
+Person A
+   │
+   ├── Skill 1
+   ├── Skill 2
+   └── Skill 3
 
-Location-aware job recommendations
-Experience-based job matching
-Course recommendations based on skill gaps
+
+Person B
+   │
+   ├── Skill 1
+   ├── Skill 2
+   └── Skill 4
+
+The overlapping skills can be used to determine professional similarity.
+
+Security and Configuration
+
+Database credentials are supplied through environment variables rather than being hard-coded into the application.
+
+The following values should never be committed to Git:
+
+COGNODB_URI
+COGNODB_USERNAME
+COGNODB_PASSWORD
+
+Local configuration should use environment variables or another secure secret-management mechanism.
+
+Future Improvements
+
+Potential future improvements include:
+
+More detailed candidate ranking criteria
+
+Experience-based candidate matching
+
+Education-based matching
+
 Company recommendations
-Career-path visualization
-Authentication
-Resume-based skill extraction
-More advanced graph-based ranking
-Interactive graph visualization
-20. Conclusion
 
-CareerGraph demonstrates how a graph database can be used to model and analyze interconnected career data.
+Course recommendations for missing skills
 
-By representing people, skills, jobs, companies, and courses as connected graph entities, the application can answer relationship-heavy career questions such as:
+More advanced similarity scoring
 
-What jobs match a person's skills?
-Which candidates best match a job?
-What skills does a person need to learn?
-Which professionals have similar skill profiles?
+Authentication and authorization
 
-The project combines Spring Boot, Cypher, CognoDB, REST APIs, and a web dashboard to provide a practical graph-powered career intelligence system.
+Candidate and recruiter dashboards
+
+Pagination for large candidate datasets
+
+Additional graph analytics
+
+Improved visualization of graph relationships
+
+Conclusion
+
+CareerGraph demonstrates how a graph database can be applied to career intelligence problems where relationships between people, skills, jobs, companies, and courses are central to the application.
+
+Instead of treating career information as isolated records, CareerGraph models these entities as connected data and uses those relationships to provide:
+
+Career analysis
+
+Job recommendations
+
+Candidate ranking
+
+Skill-gap analysis
+
+Similar-professional discovery
+
+The project combines Spring Boot, Java, CognoDB, Cypher, JavaScript, Docker, and Render to provide a complete graph-powered career intelligence application.
+
+Author
+
+Vamshi Krishna Yadagiri
+
+GitHub:
+
+https://github.com/Vamshikrishna2525
